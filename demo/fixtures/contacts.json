@@ -1,0 +1,23 @@
+{
+  "contacts": {
+    "@length": "1...10",
+    "@choose": [
+      {
+        "firstName": "#first?gender:female",
+        "lastName": "#first",
+        "name": "#name?gender:male,prefix:true",
+        "birthday": "#birthday",
+        "gender": "#gender",
+        "social": "#ssn"
+      },
+      {
+        "firstName": "#first?gender:male",
+        "lastName": "#first",
+        "name": "#name?gender:male,prefix:true",
+        "birthday": "#birthday",
+        "gender": "#gender",
+        "social": "#ssn"
+      }
+    ]
+  }
+}

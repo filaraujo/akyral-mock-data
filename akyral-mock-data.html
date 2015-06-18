@@ -1,22 +1,140 @@
 <link rel="import" href="../polymer/polymer.html">
+<script src="../mocktopus/mocktopus.min.js"></script>
+
+<!--
+A component that will ingest a schema and create a mocked data object for
+consumption by other elements. This component can also generate fake data.
+
+## Using the element
+A schema url must be givin to akyral-mock-data via the `schema-url` attribute.
+
+##Example:
+    <akyral-mock-data
+      schema-src="../demo/fixtures/contacts.json">
+    </akyral-mock-data>
+
+Upon setting the url, the schema will be fetched and parsed. Any schema
+directives will be generated and the output will be assigned to the `data`
+attribute.  This attribute can be data-bound to, or you may listen for the
+`akyral-mock-data--mocked` event that is fired.
+
+##Example:
+    <akyral-mock-data
+      data="{{data}}"
+      schema-src="../demo/fixtures/contacts.json">
+    </akyral-mock-data>
+
+The schema may also be accessed via the `schema` attribute once the schema-src
+has been fetched.
+
+##Example:
+    <akyral-mock-data
+      data="{{data}}"
+      schema="{{schema}}"
+      schema-src="../demo/fixtures/contacts.json">
+    </akyral-mock-data>
+
+@demo
+-->
 
 <script>
-  Polymer('akyral-mock-data',{
 
-    publish: {
-      data: {}
-    },
+  (function(){
+    var author = {
+      name: 'Filipe Araujo',
+      github: 'github.com/filaraujo'
+    };
 
-    ready: function(){
-      this.data = {
-        test: 'foo'
+    var mocktopus = window.mocktopus;
+
+    /**
+     * The `setSchema` method will attempt to parse the xhr request and store
+     * the schema
+     *
+     * @private
+     */
+    function setSchema(xhr) {
+      try {
+        this.schema = JSON.parse(xhr.responseText);
+        this.mock();
+      } catch(e) {
+        console.error('Unable to parse response', e);
       }
     }
-  });
+
+    Polymer({
+
+      is: 'akyral-mock-data',
+
+      properties: {
+        /**
+         * The `author` property defines the initial author, setting
+         * this value will add another author
+         */
+        author: {
+          readOnly: true,
+          type: Object,
+          value: function() {
+            return author;
+          }
+        },
+
+        /**
+         * The `data` object is set when the element has returned a mock data
+         * point
+         */
+        data: {
+          notify: true,
+          type: Object,
+          value: undefined
+        },
+
+        /**
+         * The `schema` object defines the current schema of the element
+         */
+        schema: {
+          notify: true,
+          type: Object,
+          value: undefined
+        },
+
+        /**
+         * The `schemaSrc` object defines the endpoint to retrieves the schema
+         */
+        schemaSrc: {
+          observer: 'fetch',
+          type: String,
+          value: undefined
+        }
+      },
+
+      /**
+       * The `fetch` method will retrieve the schema
+       */
+      fetch: function() {
+          var request = new XMLHttpRequest();
+          request.open('GET', this.schemaSrc, true);
+          request.onload = setSchema.bind(this, request);
+          // request.onerror = this.onError;
+          request.send();
+      },
+
+      /**
+       * The `mock` method will convert the schema into data
+       */
+      mock: function() {
+        if (!this.schema) {
+          console.error('No schema defined for akyral-mock-data');
+          return;
+        }
+
+        this.data = mocktopus.mock(this.schema);
+        this.fire('akyral-mock-data--mocked', {
+          data: this.data,
+          schema: this.schema
+        })
+      }
+    });
+  }());
+
 </script>
-
-<polymer-element name="akyral-mock-data">
-  <template>
-
-  </template>
-</polymer-element>

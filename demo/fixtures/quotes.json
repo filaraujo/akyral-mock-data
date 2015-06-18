@@ -1,0 +1,11 @@
+{
+  "quotes": {
+    "@length": "1...10",
+    "@choose": [
+      {
+        "quote": "#paragraph",
+        "author": "#name"
+      }
+    ]
+  }
+}

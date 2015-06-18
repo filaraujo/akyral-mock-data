@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+        <title>akyral-mock-data</title>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../web-component-tester/browser.js"></script>
+        <script src="../../sinonjs/sinon.js"></script>
+
+        <link rel="import" href="../akyral-mock-data.html">
+    </head>
+
+    <body>
+
+        <akyral-mock-data id="mock"></akyral-mock-data>
+
+        <script>
+          (function(){
+            var mock = document.querySelector('#mock');
+            var sinon = window.sinon;
+
+            suite('<akyral-mock-data>', function() {
+
+              suite('element with no attributes', function() {
+                test('should define the "author" property', function() {
+                  assert.equal(mock.author.name, 'Filipe Araujo');
+                });
+              });
+
+              suite('#fetch', function() {
+                test('should fetch the "schema-src" once set', function() {
+                  var spy = sinon.spy(mock, 'fetch');
+                  mock.schemaSrc = '../demo/fixtures/contacts.json';
+                  assert.isTrue(mock.fetch.called);
+                  spy.restore();
+                });
+
+                test('should set the "schema" once loaded', function(done) {
+                  mock.fetch();
+
+                  setTimeout(function() {
+                    assert.isDefined(mock.schema);
+                    assert.isObject(mock.schema);
+                    done();
+                  }, 200);
+                });
+
+                test('should set the "data"', function() {
+                  assert.isDefined(mock.data);
+                });
+              });
+
+              suite('#mock', function() {
+                test('should generate mock data', function() {
+                  var name = mock.data.contacts[0].name;
+
+                  mock.mock();
+                  assert.notEqual(name, mock.data.contacts[0].name);
+                });
+              });
+            });
+          }());
+        </script>
+
+
+    </body>
+
+</html>

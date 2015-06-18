@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+
+    <head>
+        <script>
+          // window.location = 'http://filaraujo.github.io/akyral.io/mock-data/index.html';
+        </script>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <title>akyral-mock-data Demo</title>
+        <link rel="import" href="../akyral-mock-data.html">
+        <link rel="import" href="../../akyral-code/akyral-code.html">
+    </head>
+
+    <body>
+
+      <template is="dom-bind">
+        <select value="{{schemaUrl::change}}">
+          <option value="../demo/fixtures/contacts.json">contacts</option>
+          <option value="../demo/fixtures/quotes.json">quotes</option>
+        </select>
+        <button on-click="reMock">reMock data</button>
+
+        <akyral-mock-data
+          id="mock"
+          data="{{data}}"
+          schema="{{schema}}"
+          schema-src="{{schemaUrl}}">
+        </akyral-mock-data>
+
+        <h1>schema</h1>
+        <code is="akyral-code" content="{{stringify(schema)}}"></code>
+        <h1>data</h1>
+        <code is="akyral-code" content="{{stringify(data)}}"></code>
+
+      </template>
+
+      <script>
+        var tmpl = document.querySelector('template[is="dom-bind"]');
+
+        tmpl.schemaUrl = '../demo/fixtures/contacts.json';
+
+        tmpl.reMock = function() {
+          this.$.mock.mock();
+        };
+
+        tmpl.stringify = function(data) {
+          return JSON.stringify(data, null, 4);
+        };
+      </script>
+
+    </body>
+
+</html>
